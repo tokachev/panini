@@ -9,6 +9,7 @@ app = panini_app.App(
 
 @app.task(interval=1)
 async def request_periodically():
+    print("Зашли в request_periodically")
     message = {"data": "request1234567890", "id":"test_id"}
     response = await app.request(
         subject="some.subject.for.request",
@@ -17,13 +18,13 @@ async def request_periodically():
     print(response)
 
 
-@app.task(interval=1)
-async def publish_periodically():
-    message = {"data": "event1234567890", "id":"test_id"}
-    await app.publish(
-        subject="some.subject.for.stream",
-        message=message,
-    )
+# @app.task(interval=1)
+# async def publish_periodically():
+#     message = {"data": "event1234567890", "id":"test_id"}
+#     await app.publish(
+#         subject="some.subject.for.stream",
+#         message=message,
+#     )
 
 if __name__ == "__main__":
     app.start()

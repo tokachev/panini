@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 import os
 import typing
@@ -184,14 +185,15 @@ class App:
             subject: list or str,
             data_type="json",
             validator: type = None,
-            validator_schema = None,
+            # validator_schema = None,
             validation_error_cb: FunctionType = None,
     ):
+
         return self._event_manager.listen(
             subject=subject,
             data_type=data_type,
             validator=validator,
-            validator_schema=validator_schema,
+            validator_schema=self.get_schema(subject),
             validation_error_cb=validation_error_cb
 
         )
@@ -263,6 +265,11 @@ class App:
             data_type=data_type,
             headers=headers
         )
+
+    async def get_schema(self,subscribe):
+        print("зашли в get_schema")
+        schema = json.loads(await self.nats.js_client.key_value("json_schemas").get(subscribe).value.decode('utf-8'))
+        return schema
 
     def subscribe_new_subject_sync(self, subject: str, callback: CoroutineType, **kwargs):
         return self.nats.subscribe_new_subject_sync(subject, callback, **kwargs)

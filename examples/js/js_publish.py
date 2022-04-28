@@ -1,4 +1,6 @@
+from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import app as panini_app
+import json
 
 app = panini_app.App(
     service_name="js_publish",
@@ -13,8 +15,13 @@ NUM = 0
 
 @app.on_start_task()
 async def on_start_task():
-    # Persist messages on 'test.*.stream' subject.
-    await app.nats.js_client.add_stream(name="sample-stream-1", subjects=["test.*.stream"])
+    print("Onstartup")
+    await app.nats.js_client.add_stream(name="sample-stream-4", subjects=["test.*.stream4"])
+    kv_bucket = await app.nats.js_client.create_key_value(bucket="json_schemas")
+    schema_json = json.dumps(OBJECT_SCHEMA).encode('utf-8')
+    await kv_bucket.put("some.subject.for.request", schema_json)
+
+
 
 
 def get_message():
@@ -23,7 +30,7 @@ def get_message():
     }
 
 
-@app.timer_task(interval=2)
+@app.timer_task(interval=5)
 async def publish_periodically():
     subject = "test.app2.stream"
     message = get_message()
@@ -32,6 +39,7 @@ async def publish_periodically():
     message['counter'] = NUM
     await app.publish(subject=subject, message=message)
     log.info(f"sent {message}")
+
 
 
 

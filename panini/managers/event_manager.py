@@ -39,6 +39,9 @@ class EventManager:
 
     def wrap_function_by_validator(self, function, validator, validator_schema, validation_error_cb):
         def validate_message(msg, validator_schema):
+            print("зашли в врап валидатора")
+            print("месседж:",msg)
+            print("Схема:", validator_schema)
             try:
                 if validator is not None:
                     validator.validated_message(msg.data, validator_schema)
@@ -48,7 +51,9 @@ class EventManager:
                 error = f"subject: {msg.subject} error: {str(se)}"
                 return {"success": False, "error": error}
             except Exception as e:
+                print("поймали єксепшен:",e)
                 raise ValidationError(e)
+            print("прошли врап валидатора")
             return True
 
         def wrapper(msg):

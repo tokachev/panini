@@ -15,6 +15,7 @@ services:
     volumes:
       - ./config:/config
     command:
+      - "-js"
       - "-p"
       - "4222"
       - "-m"
@@ -24,7 +25,7 @@ services:
     ports:
       - 4222:4222
       - 8222:8222
-    image: nats:latest
+    image: natswincli
     container_name: nats-server
     networks:
       - no-internet
