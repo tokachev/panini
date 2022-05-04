@@ -187,13 +187,13 @@ class App:
             validator_schema = None,
             validation_error_cb: FunctionType = None,
     ):
+
         return self._event_manager.listen(
             subject=subject,
             data_type=data_type,
             validator=validator,
             validator_schema=validator_schema,
             validation_error_cb=validation_error_cb
-
         )
 
     async def publish(

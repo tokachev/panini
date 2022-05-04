@@ -20,15 +20,15 @@ def get_message():
 async def subscribe_to_js_stream_pull():
     psub = await app.nats.js_client.pull_subscribe("test.*.stream", durable='consumer-2')
     # Fetch and ack messages from consumer.
-    for i in range(0, 10):
+    while True:
         msgs = await psub.fetch(1)
         for msg in msgs:
             print(msg.data)
             await msg.ack()
 
-@app.task(interval=1)
-async def subscribe_to_js_stream_pull():
-    print('some parallel task')
+# @app.task(interval=1)
+# async def subscribe_to_js_stream_pull():
+#     print('some parallel task')
 
 
 

@@ -1,8 +1,7 @@
 OBJECT_SCHEMA = {
     "type": "object",
     "properties":{
-        "data": {"type": "string"},
-        "id": {"type": "string"},
-    },
-    "required": ["data"]
+        "data": {"type": "array"},
+        "id": {"type": "integer"},
+    }, "required": ["meta"]
 }

@@ -85,6 +85,7 @@ class TaskManager:
         if not asyncio.iscoroutinefunction(task):
             raise InitializingTaskError("Only coroutine tasks allowed")
 
+
     def create_tasks(self):
         loop = asyncio.get_event_loop()
         for task in self._tasks:

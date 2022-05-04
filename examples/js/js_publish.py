@@ -23,7 +23,7 @@ def get_message():
     }
 
 
-@app.timer_task(interval=2)
+@app.timer_task(interval=0.3)
 async def publish_periodically():
     subject = "test.app2.stream"
     message = get_message()

@@ -8,11 +8,6 @@ app = panini_app.App(
         port=4222,
 )
 
-def validation_error_cb(msg, error):
-    return {"success": False, "error": f"validation_error_cb:,"
-                                       f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                                       f" {error}"
-                                       f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"}
 
 @app.listen("some.subject.for.request",validator=Validator, validator_schema = OBJECT_SCHEMA , validation_error_cb=validation_error_cb)
 async def request_listener(msg):
