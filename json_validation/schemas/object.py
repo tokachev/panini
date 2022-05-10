@@ -3,5 +3,5 @@ OBJECT_SCHEMA = {
     "properties":{
         "data": {"type": "array"},
         "id": {"type": "integer"},
-    }, "required": ["meta"]
+    }, "required": ["id"]
 }

@@ -1,3 +1,5 @@
+from nats.js.api import RetentionPolicy, StreamConfig
+
 from examples.js.js_validator import Validator
 from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import app as panini_app
@@ -14,16 +16,16 @@ app = panini_app.App(
 log = app.logger
 NUM = 0
 
-@app.on_start_task()
-async def on_start_task():
-    # Persist messages on 'test.*.stream' subject.
-    await app.nats.js_client.add_stream(name="sample-stream-1", subjects=["test.*.stream"])
-
-
-def get_message():
-    return {
-        "id": app.nats.client.client_id,
-    }
+# @app.on_start_task()
+# async def on_start_task():
+#     # Persist messages on 'test.*.stream' subject.
+#     await app.nats.js_client.add_stream(name="sample-stream-1", subjects=["test.*.stream"])
+#
+#
+# def get_message():
+#     return {
+#         "id": app.nats.client.client_id,
+#     }
 
 
 # @app.timer_task(interval=1)
@@ -66,7 +68,8 @@ async def subscribe_to_js_stream_push(msg):
     async def cb(msg):
         log.info(f"got JS message ! {msg.subject}:{msg.data}")
         await msg.ack()
-    await app.nats.js_client.subscribe("test.*.stream", cb=cb, durable='consumer-1', stream="sample-stream-1")
+
+    await app.nats.js_client.subscribe("test.*.stream", queue="consumer-3", cb=cb, durable='consumer-3', stream="sample-stream-1")
 
 
 if __name__ == "__main__":

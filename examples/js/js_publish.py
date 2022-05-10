@@ -1,3 +1,5 @@
+from nats.js.api import StreamConfig, RetentionPolicy
+
 from panini import app as panini_app
 
 app = panini_app.App(
@@ -17,13 +19,14 @@ async def on_start_task():
     await app.nats.js_client.add_stream(name="sample-stream-1", subjects=["test.*.stream"])
 
 
+
 def get_message():
     return {
         "id": app.nats.client.client_id,
     }
 
 
-@app.timer_task(interval=0.3)
+@app.timer_task(interval=0.7)
 async def publish_periodically():
     subject = "test.app2.stream"
     message = get_message()
