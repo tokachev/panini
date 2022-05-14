@@ -41,7 +41,7 @@ class Validator:
                 result.append(cls._validate_message(cls, m, schema))
             return result
         message = cls._validate_message(message, schema)
-        print(f'Validation status TRUE Message: {message}')
+        # print(f'Validation status TRUE Message: {message}') #validation status check
         return message
 
     @classmethod

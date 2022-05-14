@@ -1,9 +1,6 @@
-from nats.js.api import RetentionPolicy, StreamConfig
-
 from examples.js.js_validator import Validator
 from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import app as panini_app
-from functools import partial
 
 
 app = panini_app.App(
@@ -12,6 +9,7 @@ app = panini_app.App(
     port=4222,
     enable_js=True
 )
+
 
 log = app.logger
 NUM = 0
@@ -52,25 +50,18 @@ def validation_error_cb(msg, error):
                                        f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"}
 
 # Multiple subscribers
-# @app.task()
-# async def subscribe_to_js_stream_push(workers_count=10):
-#     async def cb(msg, worker_uuid=None):
-#         log.info(f"got JS message {worker_uuid}! {msg.subject}:{msg.data}")
-#         await msg.ack()
-#
-#     for _ in range(workers_count):
-#         await app.nats.js_client.subscribe("test.*.stream", queue='consumer', cb=partial(cb, worker_uuid=_), durable='consumer')
-
+@app.listen("test.*.stream", validator=Validator, validator_schema = OBJECT_SCHEMA, validation_error_cb= validation_error_cb)
+async def set_subscribers(msg,subject,workers_count=10):
+    await app.subscribe_to_js_stream_push(subject,"consumer1",workers_count)
 
 # One subscribers
-@app.listen("test.*.stream", validator=Validator, validator_schema = OBJECT_SCHEMA , validation_error_cb= validation_error_cb)
-async def subscribe_to_js_stream_push(msg):
-    async def cb(msg):
-        log.info(f"got JS message ! {msg.subject}:{msg.data}")
-        await msg.ack()
-
-    await app.nats.js_client.subscribe("test.*.stream", queue="consumer-3", cb=cb, durable='consumer-3', stream="sample-stream-1")
-
+# @app.listen("test.*.stream", validator=Validator, validator_schema = OBJECT_SCHEMA, validation_error_cb= validation_error_cb)
+# async def subscribe_to_js_stream_push(msg):
+#     async def cb(msg):
+#         log.info(f"got JS message ! {msg.subject}:{msg.data}")
+#         await msg.ack()
+#     await app.nats.js_client.subscribe("test.*.stream", queue="consumer-3", cb=cb, durable='consumer-3', stream="sample-stream-1")
+#
 
 if __name__ == "__main__":
     app.start()
