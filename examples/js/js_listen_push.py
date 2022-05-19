@@ -2,7 +2,6 @@ from examples.js.js_validator import Validator
 from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import app as panini_app
 
-
 app = panini_app.App(
     service_name="js_listen_push",
     host="127.0.0.1",
@@ -10,9 +9,9 @@ app = panini_app.App(
     enable_js=True
 )
 
-
 log = app.logger
 NUM = 0
+
 
 # @app.on_start_task()
 # async def on_start_task():
@@ -42,6 +41,7 @@ def get_message():
         "id": app.nats.client.client_id,
     }
 
+
 def validation_error_cb(msg, error):
     print("Message: ", msg, "\n\n Error: ", error)
     return {"success": False, "error": f"validation_error_cb:,"
@@ -49,10 +49,14 @@ def validation_error_cb(msg, error):
                                        f" {error}"
                                        f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"}
 
+
 # Multiple subscribers
-@app.listen("test.*.stream", validator=Validator, validator_schema = OBJECT_SCHEMA, validation_error_cb= validation_error_cb)
-async def set_subscribers(msg,subject,workers_count=10):
-    await app.subscribe_to_js_stream_push(subject,"consumer1",workers_count)
+@app.listen("test.*.stream", consumer_queue="consumer1", workers_count=10, validator=Validator,
+            validator_schema=OBJECT_SCHEMA,
+            validation_error_cb=validation_error_cb)
+async def print_msg(msg, something):
+    pass
+
 
 # One subscribers
 # @app.listen("test.*.stream", validator=Validator, validator_schema = OBJECT_SCHEMA, validation_error_cb= validation_error_cb)

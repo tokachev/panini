@@ -1,8 +1,10 @@
 import asyncio
 from types import FunctionType
 
+from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import exceptions
 from panini.exceptions import NotReadyError, ValidationError
+from panini.validator import Validator
 
 
 class EventManager:
@@ -20,13 +22,18 @@ class EventManager:
     def listen(
             self,
             subject: list or str,
+            consumer_queue=None,
             data_type="json",
             validator: type = None,
             validator_schema=None,
             validation_error_cb: FunctionType = None,
+            workers_count=None,
+            app=None
     ):
+
         def wrapper(function):
-            function = self.wrap_function_by_validator(function, subject, validator, validator_schema, validation_error_cb)
+            function = self.wrap_function_by_validator(function, subject, consumer_queue, workers_count, app, validator,
+                                                       validator_schema, validation_error_cb)
             if type(subject) is list:
                 for t in subject:
                     self._check_subscription(t)
@@ -39,7 +46,8 @@ class EventManager:
 
         return wrapper
 
-    def wrap_function_by_validator(self, function, subject, validator, validator_schema, validation_error_cb):
+    def wrap_function_by_validator(self, function, subject, consumer_queue, workers_count, app, validator,
+                                   validator_schema, validation_error_cb):
         def validate_message(msg, validator_schema):
             try:
                 if validator is not None:
@@ -63,7 +71,8 @@ class EventManager:
             validation_result = validate_message(msg, validator_schema)
             if not validation_result is True:
                 return validation_result
-            return await function(msg,subject)
+            await app.subscribe_to_js_stream_push(subject, consumer_queue, workers_count)
+            return await function(msg, subject)
 
         if asyncio.iscoroutinefunction(function):
             return wrapper_async

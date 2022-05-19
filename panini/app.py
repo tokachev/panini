@@ -6,7 +6,6 @@ import uuid
 from types import CoroutineType, FunctionType
 from functools import partial
 
-
 from panini.managers.nats_client import NATSClient
 from .exceptions import InitializingEventManagerError
 
@@ -18,6 +17,7 @@ from .utils.helper import (
     get_app_root_path,
     create_client_code_by_hostname,
 )
+from .validator import Validator
 
 _app = None
 
@@ -142,7 +142,8 @@ class App:
         if web_app:
             self.http_server = HTTPServer(routes=self.http, loop=self.loop, web_app=web_app, web_server_params=params)
         else:
-            self.http_server = HTTPServer(routes=self.http, loop=self.loop, host=host, port=port, web_server_params=params)
+            self.http_server = HTTPServer(routes=self.http, loop=self.loop, host=host, port=port,
+                                          web_server_params=params)
 
     def add_filters(self, include: list = None, exclude: list = None):
         """
@@ -183,18 +184,23 @@ class App:
     def listen(
             self,
             subject: list or str,
+            consumer_queue = None,
             data_type="json",
             validator: type = None,
-            validator_schema = None,
+            validator_schema=None,
             validation_error_cb: FunctionType = None,
+            workers_count=None,
+            app = _app
     ):
-
         return self._event_manager.listen(
             subject=subject,
+            consumer_queue=consumer_queue,
             data_type=data_type,
             validator=validator,
             validator_schema=validator_schema,
-            validation_error_cb=validation_error_cb
+            validation_error_cb=validation_error_cb,
+            workers_count = workers_count,
+            app = _app
         )
 
     async def publish(
@@ -289,11 +295,13 @@ class App:
         async def cb(msg, worker_uuid=None):
             print(f"got JS message {worker_uuid}! {msg.subject}:{msg.data}")
             await msg.ack()
+
         for _ in range(workers_count):
-            await self.nats.js_client.subscribe(subject,
-                                                    queue=consumer_queue,
-                                                    cb=partial(cb, worker_uuid=_),
-                                                    durable=consumer_queue)
+           await self.nats.js_client.subscribe(subject,
+                                                queue=consumer_queue,
+                                                cb=partial(cb, worker_uuid=_),
+                                                durable=consumer_queue
+                                                )
 
     async def unsubscribe_subject(self, subject: str):
         return await self.nats.unsubscribe_subject(subject)
@@ -349,8 +357,6 @@ class App:
             self.http_server.start_server()
         else:
             loop.run_until_complete(asyncio.gather(*tasks))
-
-
 
 
 def get_app() -> App:
