@@ -54,8 +54,10 @@ def validation_error_cb(msg, error):
 @app.listen("test.*.stream", consumer_queue="consumer1", workers_count=10, validator=Validator,
             validator_schema=OBJECT_SCHEMA,
             validation_error_cb=validation_error_cb)
-async def print_msg(msg, something):
-    pass
+async def print_msg(msg, worker_uuid):
+    print(f"got JS message {worker_uuid}! {msg.subject}:{msg.data}")
+    await msg.ack()
+
 
 
 # One subscribers

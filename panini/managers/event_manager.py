@@ -1,4 +1,5 @@
 import asyncio
+from functools import partial
 from types import FunctionType
 
 from json_validation.schemas.object import OBJECT_SCHEMA
@@ -71,8 +72,17 @@ class EventManager:
             validation_result = validate_message(msg, validator_schema)
             if not validation_result is True:
                 return validation_result
-            await app.subscribe_to_js_stream_push(subject, consumer_queue, workers_count)
-            return await function(msg, subject)
+
+            async def cb(msg, worker_uuid=None):
+                return await function(msg, worker_uuid)
+
+            for _ in range(workers_count):
+                await app.nats.js_client.subscribe(subject,
+                                                   queue=consumer_queue,
+                                                   cb=partial(cb, worker_uuid=_),
+                                                   durable=consumer_queue
+                                                   )
+
 
         if asyncio.iscoroutinefunction(function):
             return wrapper_async

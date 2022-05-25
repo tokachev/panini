@@ -291,17 +291,6 @@ class App:
     def unsubscribe_subject_sync(self, subject: str):
         return self.nats.unsubscribe_subject_sync(subject)
 
-    async def subscribe_to_js_stream_push(self, subject: str, consumer_queue: str, workers_count: int):
-        async def cb(msg, worker_uuid=None):
-            print(f"got JS message {worker_uuid}! {msg.subject}:{msg.data}")
-            await msg.ack()
-
-        for _ in range(workers_count):
-           await self.nats.js_client.subscribe(subject,
-                                                queue=consumer_queue,
-                                                cb=partial(cb, worker_uuid=_),
-                                                durable=consumer_queue
-                                                )
 
     async def unsubscribe_subject(self, subject: str):
         return await self.nats.unsubscribe_subject(subject)
