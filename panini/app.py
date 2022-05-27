@@ -184,7 +184,6 @@ class App:
     def listen(
             self,
             subject: list or str,
-            consumer_queue = None,
             data_type="json",
             validator: type = None,
             validator_schema=None,
@@ -192,9 +191,10 @@ class App:
             workers_count=None,
             app = _app
     ):
+        subject = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
         return self._event_manager.listen(
             subject=subject,
-            consumer_queue=consumer_queue,
+            consumer_queue=subject,
             data_type=data_type,
             validator=validator,
             validator_schema=validator_schema,
