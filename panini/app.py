@@ -189,7 +189,7 @@ class App:
             validator_schema=None,
             validation_error_cb: FunctionType = None,
             workers_count=None,
-            app = _app
+            app=_app
     ):
         subject = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
         return self._event_manager.listen(
@@ -199,8 +199,8 @@ class App:
             validator=validator,
             validator_schema=validator_schema,
             validation_error_cb=validation_error_cb,
-            workers_count = workers_count,
-            app = _app
+            workers_count=workers_count,
+            app=_app
         )
 
     async def publish(
@@ -290,7 +290,6 @@ class App:
 
     def unsubscribe_subject_sync(self, subject: str):
         return self.nats.unsubscribe_subject_sync(subject)
-
 
     async def unsubscribe_subject(self, subject: str):
         return await self.nats.unsubscribe_subject(subject)

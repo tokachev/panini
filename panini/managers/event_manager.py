@@ -2,7 +2,6 @@ import asyncio
 from functools import partial
 from types import FunctionType
 
-from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import exceptions
 from panini.exceptions import NotReadyError, ValidationError
 from panini.validator import Validator
@@ -82,7 +81,6 @@ class EventManager:
                                                    cb=partial(cb, worker_uuid=_),
                                                    durable=consumer_queue
                                                    )
-
 
         if asyncio.iscoroutinefunction(function):
             return wrapper_async
