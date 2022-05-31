@@ -19,7 +19,6 @@ async def on_start_task():
     await app.nats.js_client.add_stream(name="sample-stream-1", subjects=["test.*.stream"])
 
 
-
 def get_message():
     return {
         "id": app.nats.client.client_id,
@@ -31,11 +30,10 @@ async def publish_periodically():
     subject = "test.app2.stream"
     message = get_message()
     global NUM
-    NUM+=1
+    NUM += 1
     message['counter'] = NUM
     await app.publish(subject=subject, message=message)
     log.info(f"sent {message}")
-
 
 
 if __name__ == "__main__":

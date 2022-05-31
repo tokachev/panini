@@ -56,7 +56,6 @@ async def print_msg(msg, worker_uuid):
     await msg.ack()
 
 
-
 # One subscribers
 # @app.listen("test.*.stream", validator=Validator, validator_schema = OBJECT_SCHEMA, validation_error_cb= validation_error_cb)
 # async def subscribe_to_js_stream_push(msg):
