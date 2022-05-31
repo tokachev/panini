@@ -43,10 +43,7 @@ def get_message():
 
 def validation_error_cb(msg, error):
     print("Message: ", msg, "\n\n Error: ", error)
-    return {"success": False, "error": f"validation_error_cb:,"
-                                       f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-                                       f" {error}"
-                                       f"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"}
+
 
 
 # Multiple subscribers
