@@ -1,5 +1,4 @@
 from examples.js.js_validator import Validator
-from json_validation.schemas.object import OBJECT_SCHEMA
 from panini import app as panini_app
 
 app = panini_app.App(
@@ -51,9 +50,7 @@ def validation_error_cb(msg, error):
 
 
 # Multiple subscribers
-@app.listen("test.*.stream", workers_count=10, validator=Validator,
-            validator_schema=OBJECT_SCHEMA,
-            validation_error_cb=validation_error_cb)
+@app.listen("test.*.stream", workers_count=10, validator=Validator, validation_error_cb=validation_error_cb)
 async def print_msg(msg, worker_uuid):
     print(f"got JS message {worker_uuid}! {msg.subject}:{msg.data}")
     await msg.ack()

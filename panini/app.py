@@ -4,11 +4,10 @@ import os
 import typing
 import uuid
 from types import CoroutineType, FunctionType
-from functools import partial
+import json
 
 from panini.managers.nats_client import NATSClient
 from .exceptions import InitializingEventManagerError
-
 from .managers.event_manager import EventManager
 from .managers.task_manager import TaskManager
 from .middleware.error import ErrorMiddleware
@@ -17,7 +16,6 @@ from .utils.helper import (
     get_app_root_path,
     create_client_code_by_hostname,
 )
-from .validator import Validator
 
 _app = None
 
@@ -186,15 +184,17 @@ class App:
             subject: list or str,
             data_type="json",
             validator: type = None,
-            validator_schema=None,
             validation_error_cb: FunctionType = None,
             workers_count=None,
             app=_app
     ):
-        subject = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
+        consumer_queue = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
+        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with open(f"{root}\json_validation\schemas\{consumer_queue}.json") as json_file:
+            validator_schema = json.load(json_file)
         return self._event_manager.listen(
             subject=subject,
-            consumer_queue=subject,
+            consumer_queue=consumer_queue,
             data_type=data_type,
             validator=validator,
             validator_schema=validator_schema,
