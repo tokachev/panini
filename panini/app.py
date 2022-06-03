@@ -191,7 +191,7 @@ class App:
             app=_app
     ):
         consumer_queue = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
-        with open(f"{JSON_SCHEMA_PATH}\{consumer_queue}.json") as json_file:
+        with open(f"{JSON_SCHEMA_PATH}{consumer_queue}.json") as json_file:
             validator_schema = json.load(json_file)
         return self._event_manager.listen(
             subject=subject,
