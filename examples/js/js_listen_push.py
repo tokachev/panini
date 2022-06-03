@@ -45,7 +45,6 @@ def validation_error_cb(msg, error):
     print("Message: ", msg, "\n\n Error: ", error)
 
 
-
 # Multiple subscribers
 @app.listen("test.*.stream", workers_count=10, validator=Validator, validation_error_cb=validation_error_cb)
 async def print_msg(msg, worker_uuid):

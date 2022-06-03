@@ -1,4 +1,3 @@
-import inspect
 import jsonschema
 from jsonschema import validate
 from panini.exceptions import ValidationError

@@ -19,6 +19,7 @@ from .utils.helper import (
 
 _app = None
 
+JSON_SCHEMA_PATH = os.getenv('JSON_SCHEMA_PATH','')
 
 class App:
     def __init__(
@@ -189,8 +190,7 @@ class App:
             app=_app
     ):
         consumer_queue = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
-        root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        with open(f"{root}\json_validation\schemas\{consumer_queue}.json") as json_file:
+        with open(f"{JSON_SCHEMA_PATH}/{consumer_queue}.json") as json_file:
             validator_schema = json.load(json_file)
         return self._event_manager.listen(
             subject=subject,
