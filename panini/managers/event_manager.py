@@ -28,11 +28,12 @@ class EventManager:
             validator_schema=None,
             validation_error_cb: FunctionType = None,
             workers_count=None,
+            client = None,
             app=None
     ):
 
         def wrapper(function):
-            function = self.wrap_function_by_validator(function, subject, consumer_queue, workers_count, app, validator,
+            function = self.wrap_function_by_validator(function, subject, consumer_queue, workers_count, client, app, validator,
                                                        validator_schema, validation_error_cb)
             if type(subject) is list:
                 for t in subject:
@@ -46,7 +47,7 @@ class EventManager:
 
         return wrapper
 
-    def wrap_function_by_validator(self, function, subject, consumer_queue, workers_count, app, validator,
+    def wrap_function_by_validator(self, function, subject, consumer_queue, workers_count, client, app, validator,
                                    validator_schema, validation_error_cb):
         def validate_message(msg, validator_schema):
             try:
@@ -72,13 +73,13 @@ class EventManager:
             if not validation_result is True:
                 return validation_result
 
-            async def cb(msg, worker_uuid=None):
-                return await function(msg, worker_uuid)
+            async def cb(msg, worker_uuid=None, client= None):
+                return await function(msg, worker_uuid, client)
 
             for _ in range(workers_count):
                 await app.nats.js_client.subscribe(subject,
                                                    queue=consumer_queue,
-                                                   cb=partial(cb, worker_uuid=_),
+                                                   cb=partial(cb, worker_uuid=_,client=client),
                                                    durable=consumer_queue
                                                    )
 

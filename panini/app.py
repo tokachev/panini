@@ -186,11 +186,12 @@ class App:
             data_type="json",
             validator: type = None,
             validation_error_cb: FunctionType = None,
-            workers_count=None,
+            workers_count= None,
+            client = None,
             app=_app
     ):
         consumer_queue = subject.replace(".*.", "_").replace(".*", "_").replace(".", "_").strip("_")
-        with open(f"{JSON_SCHEMA_PATH}/{consumer_queue}.json") as json_file:
+        with open(f"{JSON_SCHEMA_PATH}\{consumer_queue}.json") as json_file:
             validator_schema = json.load(json_file)
         return self._event_manager.listen(
             subject=subject,
@@ -200,6 +201,7 @@ class App:
             validator_schema=validator_schema,
             validation_error_cb=validation_error_cb,
             workers_count=workers_count,
+            client = client,
             app=_app
         )
 

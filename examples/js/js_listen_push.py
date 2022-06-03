@@ -10,7 +10,7 @@ app = panini_app.App(
 
 log = app.logger
 NUM = 0
-
+# httpx_client = httpx.AsyncClient(proxies=resolve_proxy_provider()['proxies'])
 
 # @app.on_start_task()
 # async def on_start_task():
@@ -47,7 +47,8 @@ def validation_error_cb(msg, error):
 
 # Multiple subscribers
 @app.listen("test.*.stream", workers_count=10, validator=Validator, validation_error_cb=validation_error_cb)
-async def print_msg(msg, worker_uuid):
+async def print_msg(msg, worker_uuid, client):
+    print(client)
     print(f"got JS message {worker_uuid}! {msg.subject}:{msg.data}")
     await msg.ack()
 
